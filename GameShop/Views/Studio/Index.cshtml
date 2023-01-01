@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Studio>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <h1 class="text-center">Stüdyolar</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a asp-controller="Studio" asp-action="Add" class="btn btn-primary"><i class="bi bi-plus-circle"></i> &nbsp; Stüdyo Ekle</a> 
+    </div>
+
+<table class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            <th>Geliştirici Stüdyo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var obj in Model) {
+            <tr>
+                <td width="70%">@obj.Name</td>
+                <td>
+                    <div class="w-75 btn-group" role="group">
+                            <a asp-controller="Studio" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-primary mx-2"><i class="bi bi-pencil"></i>Düzenle</a>
+                                    <a asp-controller="Studio" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2"><i class="bi bi-trash3"></i>Sil</a>
+                    </div>
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
