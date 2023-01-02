@@ -1,20 +1,22 @@
 ﻿using GameShop.Models;
 using GameShopData.Data;
+using GameShopDataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GameShop.Controllers
+namespace GameShop.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class StudioController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        public StudioController(ApplicationDbContext context)
+        private readonly IUnitofWork _unitofWork;
+        public StudioController(IUnitofWork unitofWork)
         {
-            _context = context;
+            _unitofWork = unitofWork;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<Studio> objfromStudio = _context.Studios;
+            IEnumerable<Studio> objfromStudio = _unitofWork.Studio.GetAll();
             return View(objfromStudio);
         }
 
@@ -29,10 +31,11 @@ namespace GameShop.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Add(Studio obj)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                _context.Studios.Add(obj);
-                _context.SaveChanges();
+                _unitofWork.Studio.Add(obj);
+                _unitofWork.Save();
+                TempData["success"] = "Stüdyo oluşturuldu";
                 return RedirectToAction("Index");
             }
             return View(obj);
@@ -40,12 +43,12 @@ namespace GameShop.Controllers
         //Get Method
         public IActionResult Edit(int? id)
         {
-            if(id==null || id == 0)
+            if (id == null || id == 0)
             {
                 return NotFound();
             }
-            var studio = _context.Studios.Find(id);
-            if(studio==null)
+            var studio = _unitofWork.Studio.GetFirstOrDefault(u => u.Id == id);
+            if (studio == null)
             {
                 return NotFound();
             }
@@ -56,11 +59,12 @@ namespace GameShop.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Studio obj)
         {
-           
-            if(ModelState.IsValid)
+
+            if (ModelState.IsValid)
             {
-                _context.Studios.Update(obj);
-                _context.SaveChanges();
+                _unitofWork.Studio.update(obj);
+                _unitofWork.Save();
+                TempData["success"] = "Stüdyo düzenlendi";
                 return RedirectToAction("Index");
             }
             return View(obj);
@@ -73,8 +77,8 @@ namespace GameShop.Controllers
                 return NotFound();
             }
 
-            var studio = _context.Studios.Find(id);
-            if(studio == null)
+            var studio = _unitofWork.Studio.GetFirstOrDefault(u => u.Id == id);
+            if (studio == null)
             {
                 return NotFound();
             }
@@ -83,16 +87,17 @@ namespace GameShop.Controllers
         //Post Method 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
+
         public IActionResult DeletePost(int? id)
         {
-            var studio = _context.Studios.Find(id);
-            if(studio==null)
+            var studio = _unitofWork.Studio.GetFirstOrDefault(u => u.Id == id);
+            if (studio == null)
             {
                 return NotFound();
             }
-            _context.Studios.Remove(studio);
-            _context.SaveChanges();
+            _unitofWork.Studio.Remove(studio);
+            _unitofWork.Save();
+            TempData["success"] = "Stüdyo silindi";
             return RedirectToAction("Index");
 
         }

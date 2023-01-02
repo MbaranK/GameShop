@@ -1,21 +1,23 @@
 ﻿using GameShop.Models;
 using GameShopData.Data;
+using GameShopDataAccess.Repository;
+using GameShopDataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GameShop.Controllers
+namespace GameShop.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public CategoryController(ApplicationDbContext context)
+        private readonly IUnitofWork _unitofwork;
+        public CategoryController(IUnitofWork unitofwork)
         {
-            _context = context;
+            _unitofwork = unitofwork;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<Category> objCategoryList = _context.Categories;
+            IEnumerable<Category> objCategoryList = _unitofwork.Category.GetAll();
             return View(objCategoryList);
         }
 
@@ -31,21 +33,26 @@ namespace GameShop.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Add(Category obj)
         {
-                       
-            if(ModelState.IsValid)
+
+            if (ModelState.IsValid)
             {
-                _context.Categories.Add(obj);
-                _context.SaveChanges();
+                _unitofwork.Category.Add(obj);
+                _unitofwork.Save();
+                TempData["success"] = "Tür oluşturuldu";
                 return RedirectToAction("Index");
             }
-
+            TempData["error"] = "Tür oluşturulamadı";
             return View(obj);
         }
 
         //Get Method
         public IActionResult Edit(int id)
         {
-            var category = _context.Categories.Find(id);
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var category = _unitofwork.Category.GetFirstOrDefault(u => u.Id == id);
             return View(category);
         }
 
@@ -54,12 +61,15 @@ namespace GameShop.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Category obj)
         {
-            if(ModelState.IsValid)
+
+            if (ModelState.IsValid)
             {
-                _context.Categories.Update(obj);
-                _context.SaveChanges();
+                _unitofwork.Category.Update(obj);
+                _unitofwork.Save();
+                TempData["success"] = "Tür düzenlendi";
                 return RedirectToAction("Index");
             }
+            TempData["error"] = "Tür düzenlenemedi";
             return View(obj);
         }
 
@@ -70,8 +80,8 @@ namespace GameShop.Controllers
             {
                 return NotFound();
             }
-            var category = _context.Categories.Find(id);
-            if(category == null)
+            var category = _unitofwork.Category.GetFirstOrDefault(u => u.Id == id);
+            if (category == null)
             {
                 return NotFound();
             }
@@ -83,15 +93,16 @@ namespace GameShop.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
         {
-            var category = _context.Categories.Find(id);
-            if(category == null)
+            var category = _unitofwork.Category.GetFirstOrDefault(u => u.Id == id);
+            if (category == null)
             {
                 return NotFound();
             }
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
+            _unitofwork.Category.Remove(category);
+            _unitofwork.Save();
+            TempData["success"] = "Tür Silindi";
             return RedirectToAction("Index");
         }
-        
+
     }
 }
