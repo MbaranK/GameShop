@@ -33,7 +33,7 @@
             </div>
              <div class="mb-3">
                 <label asp-for="Game.Price"></label>
-                <input asp-for="Game.Price" class="form-control" />
+                <input min="0" asp-for="Game.Price" class="form-control" />
                 <span asp-validation-for="Game.Price" class="text-danger"></span>
             </div>
             <div class="mb-3">
@@ -42,7 +42,7 @@
             </div>
              <div class="mb-3">
                 <label asp-for="Game.Stock"></label>
-                <input asp-for="Game.Stock" class="form-control" />
+                <input min="0" asp-for="Game.Stock" class="form-control" />
                 <span asp-validation-for="Game.Stock" class="text-danger"></span>
             </div>
             

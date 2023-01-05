@@ -26,21 +26,36 @@ namespace GameShopDataAccess.Repository
             dbSet.Add(entity);
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if(filter != null)
             {
                 query = query.Where(filter);
             }
+            //Foreign keyler için
+            if (includeProperties != null)
+            {
+                foreach(var Prop in includeProperties.Split(new char[] { ','},StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(Prop);
+                }
+            }
             return query.ToList();
             
         }
 
-        public T GetFirstOrDefault(Expression<Func<T, bool>> filter)
+        public T GetFirstOrDefault(Expression<Func<T, bool>> filter,string? includeProperties=null)
         {
             IQueryable<T> query = dbSet;
             query = query.Where(filter);
+            if(includeProperties != null)
+            {
+                foreach(var Prop in includeProperties.Split(new char[] {','},StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(Prop);
+                }
+            }
             return query.FirstOrDefault();
         }
 

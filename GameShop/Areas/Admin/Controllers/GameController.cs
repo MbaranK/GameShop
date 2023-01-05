@@ -21,8 +21,8 @@ namespace GameShop.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<Game> games = _unitofWork.Game.GetAll();
-            return View(games);
+            
+            return View();
         }
 
         //Get Method Update ve Insert methodu birlikte kullanım.
@@ -58,7 +58,7 @@ namespace GameShop.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public IActionResult Upsert(GameVM gamevm, IFormFile file)
+        public IActionResult Upsert(GameVM gamevm, IFormFile? file)
         {
             if(ModelState.IsValid)
             {
@@ -69,19 +69,66 @@ namespace GameShop.Areas.Admin.Controllers
                     var uploads = Path.Combine(wwwRootPath, @"images/games");
                     var extension = Path.GetExtension(file.FileName);
 
+                    if(gamevm.Game.ImgUrl != null)
+                    {
+                        var oldImage = Path.Combine(wwwRootPath, gamevm.Game.ImgUrl.TrimStart('\\'));
+                        if(System.IO.File.Exists(oldImage))
+                        {
+                            System.IO.File.Delete(oldImage);
+                        }
+                    }
+
                     using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension),FileMode.Create))
                     {
                         file.CopyTo(fileStreams);
                     }
                     gamevm.Game.ImgUrl = @"\images\games\" + fileName + extension;
                 }
-                _unitofWork.Game.Add(gamevm.Game);
+                if(gamevm.Game.Id == 0)
+                {
+                    _unitofWork.Game.Add(gamevm.Game);
+                }
+                else
+                {
+                    _unitofWork.Game.Update(gamevm.Game);
+                }
                 _unitofWork.Save();
                 TempData["success"] = "Oyun eklendi";
                 return RedirectToAction("Index");
             }
             return View(gamevm.Game);
         }
+
+        #region Api Calls
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var gameList = _unitofWork.Game.GetAll(includeProperties: "Category,Studio");
+
+            return Json(new { data = gameList });
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            var obj = _unitofWork.Game.GetFirstOrDefault(u => u.Id == id);
+            if(obj == null)
+            {
+                return Json(new { success = false, message = "Silerken hata oluştu." });
+            }
+
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, obj.ImgUrl.TrimStart('\\'));
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+
+            _unitofWork.Game.Remove(obj);
+            _unitofWork.Save();
+            return Json(new { success = true, message = "Silme işlemi gerçekleştirildi." });
+            return RedirectToAction("Index");
+        }
+        #endregion
 
     }
 }

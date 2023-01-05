@@ -1,7 +1,7 @@
 ﻿
 <div class="row mt-4">
     <div class="col-md-6">
-        <h1 class="text-center">Oyun</h1>
+        <h1 class="text-start">Oyun Listesi</h1>
     </div>
     <div class="col-md-6 text-end">
         <a asp-action="Upsert" class="btn btn-primary"><i class="bi bi-plus-circle"></i> &nbsp; Oyun Ekle</a> 
@@ -9,7 +9,7 @@
 
 </div>
 <div class="container mt-3">
-    <table class="table table-bordered table-striped" style="width:100%">
+    <table id="tblData" class="table table-bordered table-striped" style="width:100%">
     <thead>
         <tr>
             <th>İsim</th>
@@ -17,7 +17,14 @@
             <th>Geliştirici Stüdyo</th>
             <th>Fiyat</th>
             <th>Stok</th>
+            <th></th>
         </tr>
     </thead>
+
 </table>
 </div>
+
+
+@section Scripts {
+    <script src="~/js/Game.js"></script>
+}
