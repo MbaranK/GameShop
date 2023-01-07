@@ -1,4 +1,5 @@
 ﻿@page
+@using GameShopUtility
 @model RegisterModel
 @{
     ViewData["Title"] = "Kayıt";
@@ -58,11 +59,14 @@
                 <label asp-for="Input.ConfirmPassword"></label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
-            <div class="form-floating py-2">
-                <select asp-for="Input.Role" asp-items=@Model.Input.RoleList class="form-select">
+            @if (User.IsInRole(Role.Role_Admin))
+            {
+                <div class="form-floating py-2">
+                    <select asp-for="Input.Role" asp-items=@Model.Input.RoleList class="form-select">
                     <option disabled selected>Rol seçiniz</option>
                 </select>               
             </div>
+            }
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Kayıt Ol</button>
         </form>
     </div>

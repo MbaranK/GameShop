@@ -1,11 +1,14 @@
 ﻿using GameShop.Models;
 using GameShopData.Data;
 using GameShopDataAccess.Repository.IRepository;
+using GameShopUtility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = Role.Role_Admin)]
     public class StudioController : Controller
     {
         private readonly IUnitofWork _unitofWork;

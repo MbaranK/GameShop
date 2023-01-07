@@ -1,6 +1,8 @@
 ﻿using GameShopDataAccess.Repository.IRepository;
 using GameShopModels;
 using GameShopModels.ViewModel;
+using GameShopUtility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace GameShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = Role.Role_Admin)]
     public class GameController : Controller
     {
         private readonly IUnitofWork _unitofWork;
