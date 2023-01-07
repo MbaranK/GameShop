@@ -1,3 +1,2 @@
-oyunlar için datatable eklenecek(index sayfasýna)
-oyunlar için update, delete iþlemleri controller da yazýlacak.
-frontend tarafý güzelleþtirelecek.
+anasayfaya arama butonu eklenecek.
+stok sayýsýný details sayfasýna ekle

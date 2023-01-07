@@ -13,6 +13,11 @@ namespace GameShopDataAccess.Repository.IRepository
         ICategoryRepository Category { get; }
 
         IGameRepository Game { get; }
+        ICartRepository Cart { get; }
+        IApplicationUserRepository ApplicationUser { get; }
+
+        IOrderDetailRepository OrderDetail { get; }
+        IOrderHeaderRepository OrderHeader { get; }
         void Save();
     }
 }
